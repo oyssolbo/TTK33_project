@@ -25,66 +25,32 @@ fi
 
 TIME=$(date +%Y-%m-%d-%H-%M-%S)
 
-DRONE_OUTPUT_TOPICS="\
-        /firefly/desired_topic\
-        /firefly/desired_topic\
-        /firefly/desired_topic\
-        /firefly/desired_topic\
-        /firefly/desired_topic\
-        /firefly/desired_topic\
-        /firefly/desired_topic\
-        /firefly/desired_topic\
-        /firefly/desired_topic\
-        /firefly/desired_topic\
-        /firefly/desired_topic\
-        /firefly/desired_topic\
-        /firefly/desired_topic\
-        /firefly/desired_topic\
-        /firefly/desired_topic\
-        /firefly/desired_topic\
-        /firefly/desired_topic"
-
 DRONE_CMD_TOPICS="\
-        /drone/command/desired_topic \
-        /drone/command/desired_topic \
-        /drone/command/desired_topic \
-        /drone/command/desired_topic \
-        /drone/command/desired_topic \
-        /drone/command/desired_topic \
-        /drone/command/desired_topic"
+        /firefly/command/current_reference \
+        /firefly/command/roll_pitch_yaw_rate_thrust \
+        /firefly/command/trajectory \
+        /firefly/command/pose"
 
-ESTIMATE_TOPICS="\
-        /estimate/dnn_cv/heading \
-        /estimate/dnn_cv/position \
-        /estimate/ekf \
-        /estimate/tcv/pose"
+QUALISYS_TOPICS="\
+        /qualisys/firefly/odom \
+        /qualisys/firefly/pose \
+        /qualisys/firefly/velocity"
 
-QUAlISYS_TOPICS="\
-        /qualisys/Anafi/odom \
-        /qualisys/Anafi/pose \
-        /qualisys/Anafi/velocity \
-        /qualisys/Platform/odom \
-        /qualisys/Platform/pose \
-        /qualisys/Platform/velocity"
+SIM_TOPICS="\
+        /firefly/ground_truth/pose"
 
-GNC_TOPICS="/guidance/pure_pursuit/velocity_reference \
-        /guidance/pid/velocity_reference"
-
-STANDARD_TOPICS="$DRONE_OUTPUT_TOPICS \
-        $ANAFI_CMD_TOPICS \
-        $DARKNET_TOPICS \
-        $ESTIMATE_TOPICS \
-        $GNC_TOPICS \
-        /tf \
-        /anafi/msg_latency"
+STANDARD_TOPICS="\
+        $DRONE_CMD_TOPICS \
+        /tf"
 
 if [[ $ENV == "sim" ]]; then
     echo "Rosbagging sim topics"
     rosbag record -O $OUTPUT_DIR/$TIME \
-        $STANDARD_TOPICS 
+        $STANDARD_TOPICS \
+        $SIM_TOPICS
 elif [[ $ENV == "lab" ]]; then
     echo "Rosbagging lab topics"
     rosbag record -O $OUTPUT_DIR/$TIME \
         $STANDARD_TOPICS \
-        $QUAlISYS_TOPICS 
+        $QUALISYS_TOPICS 
 fi

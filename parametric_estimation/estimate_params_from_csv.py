@@ -2,6 +2,7 @@ import csv
 import numpy as np
 from scipy.optimize import minimize
 from scipy.integrate import solve_ivp, ode
+import matplotlib.pyplot as plt
 
 path = "/home/msccomputer/Downloads/roll.csv"
 
@@ -21,7 +22,13 @@ time_list = [float(t) for t in time_list[1:]]
 desired_state_list = [float(ds) for ds in desired_state_list[1:]]
 state_list = [float(s) for s in state_list[1:]]
 
+# Hardcoded values for cropping
+start = 250
+end = 600
 
+time_list = time_list[start:end]
+state_list = state_list[start:end]
+desired_state_list = desired_state_list[start:end]
 
 def f(tau, k, x, u):
   return 1 / tau * (-x + k * u)
@@ -55,8 +62,8 @@ class LSEstimateODEParameters:
 
       errors += np.abs(y_hat - self.y[i])  
       # print(errors)
-      print(x)
-    return 0 #errors
+      # print(x)
+    return errors
 
   def optimize(self):
     optimization_results = minimize(
@@ -70,8 +77,12 @@ class LSEstimateODEParameters:
 
 k0 = 1
 t0 = 0.1
-dt = 1 #time_list[1] - time_list[0]
+dt = ((time_list[1] - time_list[0]) * 1e-3)
 p0 = np.array([t0, k0], dtype=float)
 
 ls_estimate_ode_params = LSEstimateODEParameters(state_list, desired_state_list, p0, dt)
 print(ls_estimate_ode_params.optimize())
+
+plt.plot(state_list)
+plt.plot(desired_state_list)
+plt.show()
